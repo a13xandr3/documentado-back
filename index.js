@@ -5,6 +5,9 @@ const convertImageToBase64 = require('./convertToBase64');
 const saveBase64AsImage = require('./convertBase64toImage');
 const cors = require('cors');
 const app = express();
+const CryptoJS = require("crypto-js");
+var buffer = require('buffer/').Buffer;
+var Base64 = require('compact-base64');
 
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }))
@@ -40,7 +43,7 @@ client.connect()
    app.post('/items', async (req, res) => {
     try {
       const resultado = await db.collection('Item').insertOne(rq(req));
-      console.log(resultado);
+      //console.log(resultado);
       res.status(201).json(resultado);
     } catch (error) {
       console.log(error);
@@ -48,28 +51,57 @@ client.connect()
     }
    })
 
-  // READ - Obter todos os documentos
-  app.get('/items', async (req, res) => {
+  // READ - Obter base64 por meio do ID
+  app.get('/base64/:id', async (req,res) => {
     try {
-      const itens = await db.collection('Item').find().toArray();
-      res.status(200).json(itens);
+      const itens = await db.collection('Item').findOne({ _id: new ObjectId(req.params.id) });
+      if (!itens) {
+          return res.status(404).json({ error: 'Item não encontrado' });
+      }
+      res.status(200).json(itens.arquivo);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   });
 
+  // READ - Obter todos os documentos
+  app.get('/items', async (req, res) => {
+ 
+    try {
+      let itens = [];
+      let ext;
+      const response = await db.collection('Item').find().toArray();
+      for ( let i = 0 ; i < response.length ; i ++ ) {
+        ext = response[i]?.arquivo?.split(';base64,')[0]?.split(':')[1]?.split('/')[1];
+        itens.push({
+          _id: response[i]._id,
+          titulo: response[i].titulo,
+          descricao: response[i].descricao,
+          categoria: response[i].categoria,
+          tipo: response[i].tipo,
+          detalhe: response[i].detalhe,
+          valor: response[i].valor,
+          extensao: ext
+        });
+      }
+      //console.log(itens);
+      res.status(200).json(itens);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
   app.get('/items/:id', async (req, res) => {
     try {
       const itens = await db.collection('Item').findOne({ _id: new ObjectId(req.params.id) });
       if (!itens) {
           return res.status(404).json({ error: 'Item não encontrado' });
       }
+      console.log(itens);
       res.status(200).json(itens);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   });
-
   // UPDATE - Atualizar um documento pelo ID
   app.put('/items/:id', async (req, res) => {
     try {
@@ -85,7 +117,6 @@ client.connect()
       res.status(500).json({ error: error.message });
     }
   });
-
   // DELETE - Excluir um documento pelo ID
   app.delete('/items/:id', async (req, res) => {
     try {
@@ -98,16 +129,10 @@ client.connect()
       res.status(500).json({ error: error.message });
     }
   });
-
   app.get('/convertBase64/:id', async (req,res) => {
     const base64String = convertImageToBase64(req.params.id);
     return res.json({ message: base64String });
   })
-
-  // Exemplo de uso:
-  // const base64String = convertImageToBase64('caminho/para/sua/imagem.jpg');
-  // console.log(base64String);
-
   app.get('/convertBase64ToImage/:id', async (req,res) => {
     try {
       console.log(req.params.id);
@@ -121,11 +146,6 @@ client.connect()
     }
   });
 
-  // Exemplo de uso:
-// const base64String = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...'; // Sua string base64 aqui
-// saveBase64AsImage(base64String, './imagens');
-
-
 app.listen(3000, () => {
-    console.log('Servidor rodando na porta 3000');
+    console.log('ServidoCryptoJS.r rodando na porta 3000');
 });
