@@ -53,6 +53,49 @@ client.connect()
     }
   });
   
+  app.get('/categoria/:palavrachave', async (req, res) => {
+    try {
+      const palavraChave = req.params.palavrachave;
+      const resultado = await db.collection('Item').find({ categoria: new RegExp(palavraChave, 'i') }).toArray();
+      if (resultado.length === 0) {
+        return res.status(404).json({ error: 'Item não encontrado' });
+      }
+      res.status(200).json(resultado);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Erro no servidor' });
+    }
+  });
+
+  // rota para exibir as categorias para popular o dropdown
+  app.get('/categoria', async (req, res) => {
+    try {
+      const categorias = await db.collection('Item').distinct('categoria');
+      if (categorias.length === 0) {
+        return res.status(404).json({ error: 'Nenhuma categoria encontrada' });
+      }
+      res.status(200).json(categorias);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Erro no servidor' });
+    }
+  });
+
+  // rota para exibir apenas o item selecionado no dropdown categoria
+  app.get('/dropdowncategoria/:palavrachave', async (req, res) => {
+    try {
+      const palavraChave = req.params.palavrachave;
+      const categorias = await db.collection('Item').find({ categoria: new RegExp(palavraChave, 'i') }).toArray();
+      if (categorias.length === 0) {
+        return res.status(404).json({ error: 'Nenhuma categoria encontrada' });
+      }
+      res.status(200).json(categorias);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: 'Erro no servidor' });
+    }
+  });
+
    // Rota para criar um novo item
    app.post('/items', async (req, res) => {
     try {
@@ -80,8 +123,7 @@ client.connect()
 
   // READ - Obter todos os documentos
   app.get('/items', async (req, res) => {
- 
-    try {
+     try {
       let itens = [];
       let ext;
       const response = await db.collection('Item').find().toArray();

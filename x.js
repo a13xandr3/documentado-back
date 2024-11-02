@@ -13,3 +13,16 @@ app.get('/search/:palavrachave', async (req, res) => {
     res.status(500).json({ error: 'Erro no servidor' });
   }
 });
+
+app.get('/categoria', async (req, res) => {
+  try {
+    const categorias = await db.collection('Item').distinct('categoria');
+    if (categorias.length === 0) {
+      return res.status(404).json({ error: 'Nenhuma categoria encontrada' });
+    }
+    res.status(200).json(categorias);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Erro no servidor' });
+  }
+});
