@@ -66,4 +66,12 @@ async function dropdownCategoriaSelected(req, res) {
     sendError(res, 500, error.message);
   }
 }
-module.exports = { getItems, getItemById, createItem, updateItem, deleteItem, dropdownPopulaCategoria, dropdownCategoriaSelected };
+async function searchDetalhe(req, res) {
+  try {
+    const item = await model.searchDetalhe(req.params.palavrachave);
+    sendResponse(res, 200, item);
+  } catch (error) {
+    sendError(res, 500, error.message);
+  }
+}
+module.exports = { getItems, getItemById, createItem, updateItem, deleteItem, dropdownPopulaCategoria, dropdownCategoriaSelected, searchDetalhe };

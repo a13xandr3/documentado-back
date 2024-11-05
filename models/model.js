@@ -63,5 +63,24 @@ async function dropdownCategoriaSelected(palavraChave) {
       }
     return itens;
 }
-
-module.exports = { findItems, findItemById, insertItem, updateItem, deleteItem, findItemsDropdownPopulaCategoria, dropdownCategoriaSelected };
+async function searchDetalhe(palavraChave) {
+    let itens = [];
+    let ext;
+    const db = await connectDB();
+    const response = await db.collection('Item').find({ detalhe: new RegExp(palavraChave, 'i') }).toArray();
+    for ( let i = 0 ; i < response.length ; i ++ ) {
+        ext = response[i]?.arquivo?.split(';base64,')[0]?.split(':')[1]?.split('/')[1];
+        itens.push({
+          _id: response[i]._id,
+          titulo: response[i].titulo,
+          descricao: response[i].descricao,
+          categoria: response[i].categoria,
+          tipo: response[i].tipo,
+          detalhe: response[i].detalhe,
+          valor: response[i].valor,
+          extensao: ext
+        });
+      }
+    return itens;
+}
+module.exports = { findItems, findItemById, insertItem, updateItem, deleteItem, findItemsDropdownPopulaCategoria, dropdownCategoriaSelected, searchDetalhe };
