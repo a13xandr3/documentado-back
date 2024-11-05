@@ -1,6 +1,5 @@
 const model = require('../models/model');
 const { sendResponse, sendError } = require('../views/response');
-//validado
 async function getItems(req, res) {
   try {
     const items = await model.findItems();
@@ -9,7 +8,6 @@ async function getItems(req, res) {
     sendError(res, 500, error.message);
   }
 }
-//validado
 async function getItemById(req, res) {
   try {
     const item = await model.findItemById(req.params.id);
@@ -19,7 +17,6 @@ async function getItemById(req, res) {
     sendError(res, 500, error.message);
   }
 }
-//validado
 async function createItem(req, res) {
   try {
     const newItem = await model.insertItem(req.body);
@@ -28,7 +25,6 @@ async function createItem(req, res) {
     sendError(res, 500, error.message);
   }
 }
-//validado
 async function updateItem(req, res) {
   try {
     const result = await model.updateItem(req.params.id, req.body);
@@ -38,7 +34,6 @@ async function updateItem(req, res) {
     sendError(res, 500, error.message);
   }
 }
-//validado
 async function deleteItem(req, res) {
   try {
     const result = await model.deleteItem(req.params.id);
@@ -48,7 +43,6 @@ async function deleteItem(req, res) {
     sendError(res, 500, error.message);
   }
 }
-//validado
 async function dropdownPopulaCategoria(req, res) {
   try {
     const items = await model.findItemsDropdownPopulaCategoria();
@@ -57,7 +51,6 @@ async function dropdownPopulaCategoria(req, res) {
     sendError(res, 500, error.message);
   }
 }
-//validado
 async function dropdownCategoriaSelected(req, res) {
   try {
     const item = await model.dropdownCategoriaSelected(req.params.palavrachave);
