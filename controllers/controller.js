@@ -9,6 +9,7 @@ async function getItems(req, res) {
   }
 }
 async function getItemById(req, res) {
+  console.log('mmmmm');
   try {
     const item = await model.findItemById(req.params.id);
     if (!item) return sendError(res, 404, 'Item não encontrado');
