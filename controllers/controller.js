@@ -1,5 +1,7 @@
 const model = require('../models/model');
 const { sendResponse, sendError } = require('../views/response');
+
+/*
 async function getItems(req, res) {
   try {
     const items = await model.findItems();
@@ -8,16 +10,32 @@ async function getItems(req, res) {
     sendError(res, 500, error.message);
   }
 }
+*/
+
 async function getItemById(req, res) {
-  console.log('mmmmm');
+  const id = req.params.id;
   try {
-    const item = await model.findItemById(req.params.id);
+    const item = await model.findItemById(id);
     if (!item) return sendError(res, 404, 'Item não encontrado');
     sendResponse(res, 200, item);
   } catch (error) {
     sendError(res, 500, error.message);
   }
 }
+
+
+async function base64(req, res) {
+  const id = req.params.id;
+  try {
+    const b64 = await model.base64(id);
+    if (!b64) return sendError(res, 404, 'Item não encontrado');
+    sendResponse(res, 200, b64);
+  } catch (error) {
+    sendError(res, 500, error.message);
+  }
+}
+
+
 async function createItem(req, res) {
   try {
     const newItem = await model.insertItem(req.body);
@@ -68,4 +86,4 @@ async function searchDetalhe(req, res) {
     sendError(res, 500, error.message);
   }
 }
-module.exports = { getItems, getItemById, createItem, updateItem, deleteItem, dropdownPopulaCategoria, dropdownCategoriaSelected, searchDetalhe };
+module.exports = { getItemById, base64, createItem, updateItem, deleteItem, dropdownPopulaCategoria, dropdownCategoriaSelected, searchDetalhe };
